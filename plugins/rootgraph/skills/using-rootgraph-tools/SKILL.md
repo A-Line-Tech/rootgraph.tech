@@ -6,7 +6,7 @@ description: Когда в проекте, подключённом к Rootgraph
 # Инструменты Rootgraph вместо grep/Read
 
 Rootgraph поддерживает у себя семантический индекс кода (координаты + вектор,
-без текста — см. docs/architecture.md §3.3/§4.1) и держит его свежим сам,
+без текста) и держит его свежим сам,
 через хуки `SessionStart`/`PostToolUse`. Это не замена `grep`/`Read` для
 любой задачи — это дополнительный инструмент, который выигрывает у них в
 конкретных, узнаваемых ситуациях ниже. Если ни один пример не подходит —
@@ -183,7 +183,7 @@ bootstrap. Дальше — навык `rootgraph-bootstrap` и команда `
 ## `.claude/rootgraph/conventions.md` — читать целиком на SessionStart
 
 Если в проекте есть `.claude/rootgraph/conventions.md` (рендер опросника
-командных конвенций, docs/conventions-questionnaire.md — заполняется через
+командных конвенций — заполняется через
 `/rootgraph-conventions`, см. навык `rootgraph-conventions-wizard`) —
 прочитай его **целиком** в начале сессии, а не по факту первого релевантного
 вопроса. Это не справочная информация на всякий случай, а de facto standing
@@ -228,7 +228,7 @@ instructions этого конкретного проекта: раздел E т
 локально срез проекта (файлы, символы без текста, открытые задачи/техдолг) в
 `.claude/rootgraph/snapshot.json`, TTL по умолчанию 24 часа. Не вызывай его
 превентивно "на всякий случай" в начале обычной сессии — это отдельная явная
-команда, а не часть обычного цикла работы (§3.5 architecture.md).
+команда, а не часть обычного цикла работы.
 
 Пока сервер недоступен, `rootgraph_semantic_search`/`rootgraph_find_definition`/
 `rootgraph_find_callers`/`rootgraph_get_dependencies`/`rootgraph_get_dependents`/
@@ -247,7 +247,7 @@ instructions этого конкретного проекта: раздел E т
 
 `rootgraph_find_definition`/`rootgraph_find_callers`/
 `rootgraph_get_dependencies`/`rootgraph_get_dependents`/`rootgraph_get_impact`
-поверх графа символов в Neo4j (tasks.md Фаза 1/5) уже реализованы — если
+поверх графа символов уже реализованы — если
 пользователь просит «найди все места, где вызывается X» или «что сломается,
 если я поменяю сигнатуру Y», это `rootgraph_find_callers`/
 `rootgraph_get_impact`, а не ручной `grep` по имени функции (который не
