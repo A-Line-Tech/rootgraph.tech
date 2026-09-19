@@ -1,6 +1,18 @@
 {
   "description": "Rootgraph: точечный пересчёт индекса после Write/Edit и git-diff догонка на старте сессии (tasks.md, Фаза 5)",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rootgraph hook pretooluse",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit|NotebookEdit|MultiEdit",
