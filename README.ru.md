@@ -42,15 +42,52 @@ RootGraph заменяет эти догадки настоящей, приго�
 
 **Аутентификация по устройствам вместо общего секрета.** Новое устройство подключается по короткоживущему одноразовому инвайту и локально сгенерированной паре ключей Ed25519, по той же модели доверия, что WireGuard, Tailscale и SSH-CA. Потеря ноутбука означает отзыв одного конкретного устройства, а не ротацию общего ключа для всего проекта.
 
+## Установка
+
+RootGraph поставляется как один клиентский бинарник и плагин для Claude Code. Больше ничего на машине разработчика ставить не нужно.
+
+**1. Установите клиент** (macOS и Linux):
+
+```sh
+curl -fsSL https://rootgraph.tech/install.sh | sh
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://rootgraph.tech/install.ps1 | iex
+```
+
+Установщик выбирает сборку под вашу ОС и процессор (macOS arm64 и amd64, Linux arm64 и amd64, Windows amd64), проверяет её контрольную сумму SHA-256 и кладёт `rootgraph` в `~/.local/bin` (в Windows: `%LOCALAPPDATA%\Programs\rootgraph`). Сборку можно скачать и вручную из [последнего релиза](https://github.com/isi1988/rootgraph.tech/releases/latest) и сверить с `checksums.txt`.
+
+**2. Подключите плагин в Claude Code:**
+
+```sh
+claude plugin marketplace add isi1988/rootgraph.tech
+claude plugin install rootgraph@rootgraph
+```
+
+Внутри Claude Code те же команды выглядят как `/plugin marketplace add isi1988/rootgraph.tech` и `/plugin install rootgraph@rootgraph`.
+
+**3. Подключите репозиторий.** Создайте проект в [веб-кабинете](https://rootgraph.tech), на странице «Устройства» создайте инвайт, затем в корне git-репозитория выполните:
+
+```sh
+rootgraph init --invite <код-инвайта>
+rootgraph index
+```
+
+Инвайт одноразовый. Ключ устройства создаётся локально и не покидает вашу машину.
+
 ## Статус
 
-RootGraph активно разрабатывается. Этот репозиторий, публичная витрина проекта: здесь будут появляться README, примеры использования и релизы по мере готовности.
+RootGraph активно разрабатывается. Этот репозиторий, публичная витрина проекта: здесь лежат README, маркетплейс плагина для Claude Code и релизы клиента, а примеры использования будут появляться по мере готовности.
 
 ## Что здесь есть
 
 * README (то, что вы сейчас читаете)
+* `.claude-plugin/marketplace.json` и `plugins/rootgraph`: маркетплейс плагина для Claude Code
+* [Релизы](https://github.com/isi1988/rootgraph.tech/releases): сборки клиента для macOS, Linux и Windows
 * Примеры: скоро
-* Релизы: скоро
 
 ## Контакты
 

@@ -42,15 +42,52 @@ A small, thin client runs next to your coding agent and talks to a RootGraph ser
 
 **Device-based authentication instead of a shared secret.** New devices are enrolled with a short-lived, one-time invite and a locally generated Ed25519 key pair, the same trust model used by WireGuard, Tailscale, and SSH certificate authorities. Losing a laptop means revoking that one device, not rotating a shared key for the whole project.
 
+## Install
+
+RootGraph ships as one client binary plus a Claude Code plugin. Nothing else has to be installed on a developer machine.
+
+**1. Install the client** (macOS and Linux):
+
+```sh
+curl -fsSL https://rootgraph.tech/install.sh | sh
+```
+
+On Windows (PowerShell):
+
+```powershell
+irm https://rootgraph.tech/install.ps1 | iex
+```
+
+The installer picks the right build for your OS and CPU (macOS arm64 and amd64, Linux arm64 and amd64, Windows amd64), verifies its SHA-256 checksum, and puts `rootgraph` into `~/.local/bin` (or `%LOCALAPPDATA%\Programs\rootgraph` on Windows). You can also download a build by hand from the [latest release](https://github.com/isi1988/rootgraph.tech/releases/latest) and verify it against `checksums.txt`.
+
+**2. Add the plugin to Claude Code:**
+
+```sh
+claude plugin marketplace add isi1988/rootgraph.tech
+claude plugin install rootgraph@rootgraph
+```
+
+Inside Claude Code the same commands are `/plugin marketplace add isi1988/rootgraph.tech` and `/plugin install rootgraph@rootgraph`.
+
+**3. Connect a repository.** Create a project in the [web dashboard](https://rootgraph.tech), create an invite on its Devices page, then in the root of your git repository run:
+
+```sh
+rootgraph init --invite <invite-code>
+rootgraph index
+```
+
+The invite is single-use. The device key is generated locally and never leaves your machine.
+
 ## Status
 
-RootGraph is under active development. This repository is the public front door for the project: README, usage examples, and releases will be published here as they become available.
+RootGraph is under active development. This repository is the public front door for the project: the README, the Claude Code plugin marketplace, and the client releases live here, and usage examples will be added as they become available.
 
 ## What's here
 
 * README (this file)
+* `.claude-plugin/marketplace.json` and `plugins/rootgraph`: the Claude Code plugin marketplace
+* [Releases](https://github.com/isi1988/rootgraph.tech/releases): client builds for macOS, Linux and Windows
 * Examples: coming soon
-* Releases: coming soon
 
 ## Contact
 

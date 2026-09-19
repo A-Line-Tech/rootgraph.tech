@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "rootgraph": {
+      "command": "rootgraph",
+      "args": []
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "rootgraph",
+  "version": "0.1.0",
+  "description": "Семантический граф проекта поверх MCP: точный поиск по коду, задачи/техдолг и диаграммы вместо grep по большому репозиторию",
+  "author": {
+    "name": "Sviatoslav Ivanov",
+    "email": "s.ivanov@team21.ru"
+  }
+}

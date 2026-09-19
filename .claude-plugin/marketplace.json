@@ -1,0 +1,24 @@
+{
+  "name": "rootgraph",
+  "owner": {
+    "name": "Sviatoslav Ivanov",
+    "email": "s.ivanov@team21.ru"
+  },
+  "metadata": {
+    "description": "Rootgraph: semantic project graph over MCP. / Rootgraph: семантический граф проекта поверх MCP."
+  },
+  "plugins": [
+    {
+      "name": "rootgraph",
+      "source": "./plugins/rootgraph",
+      "description": "Semantic project graph over MCP: precise code search, tasks/tech debt and diagrams. / Семантический граф проекта поверх MCP: точный поиск по коду, задачи/техдолг и диаграммы.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Sviatoslav Ivanov",
+        "email": "s.ivanov@team21.ru"
+      },
+      "category": "development",
+      "homepage": "https://rootgraph.tech"
+    }
+  ]
+}
