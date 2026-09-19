@@ -58,16 +58,16 @@ On Windows (PowerShell):
 irm https://rootgraph.tech/install.ps1 | iex
 ```
 
-The installer picks the right build for your OS and CPU (macOS arm64 and amd64, Linux arm64 and amd64, Windows amd64), verifies its SHA-256 checksum, and puts `rootgraph` into `~/.local/bin` (or `%LOCALAPPDATA%\Programs\rootgraph` on Windows). You can also download a build by hand from the [latest release](https://github.com/isi1988/rootgraph.tech/releases/latest) and verify it against `checksums.txt`.
+The installer picks the right build for your OS and CPU (macOS arm64 and amd64, Linux arm64 and amd64, Windows amd64), verifies its SHA-256 checksum, and puts `rootgraph` into `~/.local/bin` (or `%LOCALAPPDATA%\Programs\rootgraph` on Windows). You can also download a build by hand from the [latest release](https://github.com/A-Line-Tech/rootgraph.tech/releases/latest) and verify it against `checksums.txt`.
 
 **2. Add the plugin to Claude Code:**
 
 ```sh
-claude plugin marketplace add isi1988/rootgraph.tech
+claude plugin marketplace add A-Line-Tech/rootgraph.tech
 claude plugin install rootgraph@rootgraph
 ```
 
-Inside Claude Code the same commands are `/plugin marketplace add isi1988/rootgraph.tech` and `/plugin install rootgraph@rootgraph`.
+Inside Claude Code the same commands are `/plugin marketplace add A-Line-Tech/rootgraph.tech` and `/plugin install rootgraph@rootgraph`.
 
 **3. Connect a repository.** Create a project in the [web dashboard](https://rootgraph.tech), create an invite on its Devices page, then in the root of your git repository run:
 
@@ -86,7 +86,7 @@ RootGraph is under active development. This repository is the public front door 
 
 * README (this file)
 * `.claude-plugin/marketplace.json` and `plugins/rootgraph`: the Claude Code plugin marketplace
-* [Releases](https://github.com/isi1988/rootgraph.tech/releases): client builds for macOS, Linux and Windows
+* [Releases](https://github.com/A-Line-Tech/rootgraph.tech/releases): client builds for macOS, Linux and Windows
 * Examples: coming soon
 
 ## Contact

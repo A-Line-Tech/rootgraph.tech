@@ -58,16 +58,16 @@ Windows (PowerShell):
 irm https://rootgraph.tech/install.ps1 | iex
 ```
 
-Установщик выбирает сборку под вашу ОС и процессор (macOS arm64 и amd64, Linux arm64 и amd64, Windows amd64), проверяет её контрольную сумму SHA-256 и кладёт `rootgraph` в `~/.local/bin` (в Windows: `%LOCALAPPDATA%\Programs\rootgraph`). Сборку можно скачать и вручную из [последнего релиза](https://github.com/isi1988/rootgraph.tech/releases/latest) и сверить с `checksums.txt`.
+Установщик выбирает сборку под вашу ОС и процессор (macOS arm64 и amd64, Linux arm64 и amd64, Windows amd64), проверяет её контрольную сумму SHA-256 и кладёт `rootgraph` в `~/.local/bin` (в Windows: `%LOCALAPPDATA%\Programs\rootgraph`). Сборку можно скачать и вручную из [последнего релиза](https://github.com/A-Line-Tech/rootgraph.tech/releases/latest) и сверить с `checksums.txt`.
 
 **2. Подключите плагин в Claude Code:**
 
 ```sh
-claude plugin marketplace add isi1988/rootgraph.tech
+claude plugin marketplace add A-Line-Tech/rootgraph.tech
 claude plugin install rootgraph@rootgraph
 ```
 
-Внутри Claude Code те же команды выглядят как `/plugin marketplace add isi1988/rootgraph.tech` и `/plugin install rootgraph@rootgraph`.
+Внутри Claude Code те же команды выглядят как `/plugin marketplace add A-Line-Tech/rootgraph.tech` и `/plugin install rootgraph@rootgraph`.
 
 **3. Подключите репозиторий.** Создайте проект в [веб-кабинете](https://rootgraph.tech), на странице «Устройства» создайте инвайт, затем в корне git-репозитория выполните:
 
@@ -86,7 +86,7 @@ RootGraph активно разрабатывается. Этот репозит
 
 * README (то, что вы сейчас читаете)
 * `.claude-plugin/marketplace.json` и `plugins/rootgraph`: маркетплейс плагина для Claude Code
-* [Релизы](https://github.com/isi1988/rootgraph.tech/releases): сборки клиента для macOS, Linux и Windows
+* [Релизы](https://github.com/A-Line-Tech/rootgraph.tech/releases): сборки клиента для macOS, Linux и Windows
 * Примеры: скоро
 
 ## Контакты
