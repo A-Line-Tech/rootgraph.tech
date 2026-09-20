@@ -13,6 +13,10 @@ argument-hint: "[--refresh] [--force] [documents|triage|components|conventions]"
 Сначала вызови `rootgraph_status`. Если `configured: false` — скажи, что нужен
 `rootgraph_init`, и остановись.
 
+Если в ответе `rootgraph_status` поле `index_run.status` равно `running` — индексация и
+граф ещё строятся: скажи об этом одной строкой (стадия и «файлов N из M» из `index_run`) и
+остановись; агентские шаги начинаются только после `done`.
+
 Аргументы: `$ARGUMENTS`. Разбор: `--refresh` и `--force` передаются в
 `rootgraph_bootstrap_run` как есть (`--force` только если пользователь сам его
 набрал: он перезаписывает ручные правки); слово `documents`, `triage`,
