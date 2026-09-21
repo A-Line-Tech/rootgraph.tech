@@ -57,9 +57,11 @@ argument-hint: "[add|list|link|access] ..."
 там есть `reason` (`unknown_path`, `not_a_file`, `excluded`, `secret_tombstoned`,
 `no_symbols`, `not_indexed`, `symbol_not_found`) и `message` с объяснением и тем,
 что делать. Передай пользователю `message` и не повторяй вызов вслепую: файл из
-`.gitignore`, исключённый или похожий на секрет привязать не к чему (секретный
-файл из `.gitignore` не предлагай убирать из игнора: его значения только в
-хранилище), а при `not_indexed` нужен `rootgraph index`.
+`.gitignore`, исключённый или секретный по имени (`.env*`, `*.pem`), а также файл, из которого
+значения нельзя надёжно вырезать (`secret_tombstoned`), привязать не к чему (секретный файл из
+`.gitignore` не предлагай убирать из игнора: его значения в индекс не попадают). Обычный файл
+с секретом индексируется с заглушками вместо значений и связывается как любой другой. При
+`not_indexed` нужен `rootgraph index`.
 
 ## `access grant <component> <device|user> <ref> <mechanism> [ref-на-секрет]`
 

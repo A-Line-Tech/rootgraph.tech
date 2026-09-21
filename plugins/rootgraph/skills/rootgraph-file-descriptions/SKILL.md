@@ -1,6 +1,6 @@
 ---
 name: rootgraph-file-descriptions
-description: Как описывать файлы кода в проекте с Rootgraph — по 1–2 предложения «что делает файл», пачками через субагентов Task и rootgraph_file_describe_save. Загружать, когда пришёл блок describe из rootgraph_index, SessionStart-сообщение «у N файлов кода нет описания», результат rootgraph_files_undescribed, при /rootgraph-describe и при просьбе «опиши файлы».
+description: Как описывать файлы кода в проекте с Rootgraph — по 1–2 предложения «что делает файл», пачками через субагентов Task и rootgraph_file_describe_save. Загружать, когда пришёл блок describe из rootgraph_index, SessionStart-сообщение «файлов кода без описания: N», результат rootgraph_files_undescribed, при /rootgraph-describe и при просьбе «опиши файлы».
 ---
 
 # Описания файлов кода

@@ -72,11 +72,20 @@ Inside Claude Code the same commands are `/plugin marketplace add A-Line-Tech/ro
 **3. Connect a repository.** Create a project in the [web dashboard](https://rootgraph.tech), create an invite on its Devices page, then in the root of your git repository run:
 
 ```sh
-rootgraph init --invite <invite-code>
-rootgraph index
+rootgraph init
 ```
 
-The invite is single-use. The device key is generated locally and never leaves your machine.
+`rootgraph init` asks for the invite code with hidden input, so the code stays out of your shell history and out of any chat. For scripts pass it on stdin (`printf '%s' "$INVITE_CODE" | rootgraph init --invite -`) or in `ROOTGRAPH_INVITE`. On the first device of a project `init` also builds the index and the base documents (merge everything you need into one branch and update it first: the index is built from the code in the current folder); if the index is already on the server, it only catches up your local changes. The invite is single-use. The device key is generated locally and never leaves your machine.
+
+**4. Check the setup.** `rootgraph doctor` lists what is not ready yet and how to fix it. If the plugin is installed in the middle of a Claude Code session, the hooks work at once and the `rootgraph_*` tools appear with a delay (restart the session if they do not).
+
+### Secrets need your consent
+
+Indexing finds secrets in project files. Their values never enter the index (a placeholder stands in their place), and they go to the encrypted vault only after you agree: in a terminal `rootgraph index` shows a summary without values and asks `[y/N]`. Decide later with `rootgraph vault consent upload` or `decline`, see what was found with `rootgraph vault list`, and mark test values as "not a secret" with `rootgraph secrets allow <path>`. The agent cannot make these decisions for you.
+
+### Git worktrees
+
+`.claude/rootgraph/config.json` belongs to your device and is not committed (`rootgraph init` adds a `.gitignore` for it; commit that file). Agent sessions in linked worktrees take the settings from the main checkout and only read the shared index: changes made in a worktree reach the index after they are merged into the main checkout.
 
 ## Status
 

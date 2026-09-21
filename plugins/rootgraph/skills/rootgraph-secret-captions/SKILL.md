@@ -1,6 +1,6 @@
 ---
 name: rootgraph-secret-captions
-description: Как подписывать секреты проекта в хранилище Rootgraph — «для чего секрет нужен и на каком сервере», по безопасному контексту без значений, через rootgraph_secrets_undescribed, субагентов Task и rootgraph_secret_describe_save; как читать граф секрета (rootgraph_secret_usage) и что делать при ожидающих устройствах. Загружать при SessionStart-сообщении «у N секретов нет подписи», подсказке secrets_hint в результате rootgraph_index, при /rootgraph-secrets и при просьбе «подпиши секреты».
+description: Как подписывать секреты проекта в хранилище Rootgraph — «для чего секрет нужен и на каком сервере», по безопасному контексту без значений, через rootgraph_secrets_undescribed, субагентов Task и rootgraph_secret_describe_save; как читать граф секрета (rootgraph_secret_usage) и что делать при ожидающих устройствах. Загружать при SessionStart-сообщении «секретов без подписи: N», подсказке secrets_hint в результате rootgraph_index, при /rootgraph-secrets и при просьбе «подпиши секреты».
 ---
 
 # Подписи секретов
