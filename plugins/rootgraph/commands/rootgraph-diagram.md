@@ -6,13 +6,15 @@ argument-hint: "[generate <kind> [scope]|list|status [kind]]"
 # /rootgraph-diagram
 
 Обёртка над `rootgraph_diagram_generate`/`rootgraph_diagram_list`/
-`rootgraph_diagram_status` — диаграммы (`.mmd`+`.drawio`) коммитятся в
-`docs/diagrams/` репозитория пользователя, сервер сам строит Cypher-запрос
-и оба рендера за один вызов, клиент только пишет файлы и `manifest.json`.
+`rootgraph_diagram_status` — диаграммы (`.mmd`+`.drawio`) по умолчанию лежат
+локально в `.claude/rootgraph/diagrams/` (каталог в `.gitignore` плагина, дерево
+проекта не меняется); сервер сам строит Cypher-запрос и оба рендера за один
+вызов, клиент только пишет файлы и `manifest.json`. В `docs/diagrams/`
+репозитория диаграммы копируются только по явной просьбе пользователя.
 
 Перед первым использованием в проекте убедись, что Rootgraph подключён
-(`rootgraph_status`, `configured: true`) — если нет, скажи пользователю, что
-нужен `rootgraph_init`, и не выполняй ничего из этого файла.
+(`rootgraph_status`, `configured: true`) — если нет, скажи пользователю по полю `notice`,
+что проект не подключён (`rootgraph init` в терминале, код приглашения в чат присылать не нужно), и не выполняй ничего из этого файла.
 
 Если `rootgraph_status` вернул `project_locked` (или любой вызов `rootgraph_*` ответил «проект заблокирован» / «проект удалён» / «доступ отозван») — немедленно остановись, ничего не повторяй и не запускай субагентов, передай пользователю сообщение из ответа (код и ссылку на тарифы) и больше не вызывай `rootgraph_*`.
 
@@ -28,14 +30,19 @@ argument-hint: "[generate <kind> [scope]|list|status [kind]]"
 Вызови `rootgraph_diagram_generate(kind, scope)`. Покажи пользователю, куда
 записаны файлы, `node_count`/`edge_count` и `aggregation_level` — если
 агрегация сработала (уровень выше `"none"`), явно скажи, что часть узлов
-свёрнута по каталогам из-за лимита `max_nodes`, а не молчи об этом.
+свёрнута по каталогам из-за лимита `max_nodes`, а не молчи об этом. Если в
+ответе есть `warnings` (замечания к разметке Mermaid), покажи их.
+
+Копировать диаграмму в `docs/diagrams/` для коммита нужно только если
+пользователь об этом просил: тогда вызови с `publish=true`
+(`rootgraph_diagram_generate(kind, scope, publish)`) и назови файлы из
+`published`. Без просьбы файлы остаются локальными.
 
 ## `list`
 
 Вызови `rootgraph_diagram_list` без параметров, выведи таблицей
 `kind | scope | сгенерирована когда`, и отдельно — `available_kinds`,
-которых ещё нет в `docs/diagrams/`, как подсказку, что ещё можно
-сгенерировать.
+которых ещё нет в списке, как подсказку, что ещё можно сгенерировать.
 
 ## `status [kind]`
 

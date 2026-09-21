@@ -10,8 +10,11 @@ argument-hint: "[--refresh] [--force] [documents|triage|components|conventions]"
 работа), разбор находок сканирования и компоненты архитектуры. Протокол,
 правила и промпты субагентов — навык `rootgraph-bootstrap`.
 
-Сначала вызови `rootgraph_status`. Если `configured: false` — скажи, что нужен
-`rootgraph_init`, и остановись.
+Перед первой индексацией напомни: слить все нужные ветки в одну и обновить её (`git pull`), иначе индекс отразит неполный код.
+
+Сначала вызови `rootgraph_status`. Если `configured: false` — проект не подключён: скажи об этом словами из поля `notice` ответа
+(подключает пользователь командой `rootgraph init` в терминале: код приглашения там
+спрашивают скрытым вводом, присылать его в чат не нужно), и остановись.
 
 Если в ответе `rootgraph_status` поле `index_run.status` равно `running` — индексация и
 граф ещё строятся: скажи об этом одной строкой (стадия и «файлов N из M» из `index_run`) и
@@ -30,8 +33,11 @@ argument-hint: "[--refresh] [--force] [documents|triage|components|conventions]"
    `rootgraph_bootstrap_run` (с этими флагами).
 3. `rootgraph_bootstrap_plan(phase)` и выполни `instruction` дословно: субагенты
    через Task, все вызовы одним сообщением. Явный запуск команды считается
-   согласием на ≤ 8 субагентов; если `estimated_subagents` больше 8 — назови
-   число и спроси.
+   согласием на ≤ 8 субагентов; если `requires_user_confirmation` (субагентов
+   больше 8) — сначала покажи пользователю `confirmation_text` из плана (число
+   субагентов, оценка токенов и времени) и жди ответа. Код субагенты читают в
+   `code_root` из плана: в worktree это не тот каталог, где лежит
+   конфигурация Rootgraph.
 4. `rootgraph_bootstrap_mark(step="architecture_review", status="done", note)`.
 5. Язык всех текстов — язык проекта из поля `language_name` результата;
    идентификаторы, slug и названия документов остаются английскими.

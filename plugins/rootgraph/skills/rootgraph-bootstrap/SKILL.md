@@ -14,8 +14,8 @@ description: "Как довести проект до базового набо�
   базовых документов (`project-overview`, `architecture`, `modules`,
   `data-model`, `infrastructure`, `development-guide`, `unfinished-work`) и
   находит незавершённую работу и техдолг: заглушки, отключённые тесты,
-  `deprecated`, незакрытые чекбоксы в README/docs, слишком большие файлы и
-  функции, файлы без тестов. Находки попадают в задачи со статусом
+  `deprecated`, незакрытые чекбоксы в README/docs (без архивов, чек-листов и
+  шаблонов), слишком большие файлы и функции, файлы без тестов. Находки попадают в задачи со статусом
   `pending_review` и источником `bootstrap`: ничего не принимается молча.
 - **Слой 2 — агент.** Ты (с параллельными субагентами) обогащаешь
   сгенерированные части документов смыслом, создаёшь компоненты
@@ -23,6 +23,8 @@ description: "Как довести проект до базового набо�
   конвенций.
 
 ## Когда начинать
+
+Перед первой (полной) индексацией всё нужное должно быть слито в одну ветку и checkout обновлён (`git pull`): индекс строится по коду в текущей папке. Если пользователь на другой ветке или отстал от основной, скажи об этом одной строкой до запуска индексации.
 
 Слой 2 (всё, что делает агент) идёт после индексации и построения графа, после
 описаний файлов и подписей секретов: индексация и граф, затем описания, затем
@@ -34,7 +36,7 @@ running`, жди (опрашивай раз в 30–60 секунд); `failed` �
 
 ## Протокол
 
-1. `rootgraph_status`. Если `configured: false` — остановись, нужен `rootgraph_init`.
+1. `rootgraph_status`. Если `configured: false` — остановись: проект не подключён (см. поле `notice`; подключает пользователь командой `rootgraph init` в терминале, код приглашения в чат присылать не нужно).
 2. `rootgraph_bootstrap_status`: шаги, документы, счётчики, поле `next`.
 3. Если шаг `base_documents` не `done` — вызови `rootgraph_bootstrap_run` (быстро,
    без LLM; сам запускает индексацию, если проект ещё не индексировался).
@@ -45,12 +47,15 @@ running`, жди (опрашивай раз в 30–60 секунд); `failed` �
    `triage`, `conventions`) и выполни поле `instruction` дословно: для КАЖДОГО
    batch отдельный субагент через Task (`general-purpose`), все вызовы Task
    ОДНИМ сообщением, чтобы они шли параллельно. Размеры пачек: модули по 8
-   ключей, триаж по 15 задач.
-5. Если `estimated_subagents` больше 8, а вход был автоматической подсказкой
-   (SessionStart, блок в результате `rootgraph_init`/`rootgraph_index`), а не
-   явной командой `/rootgraph-bootstrap` — сначала назови пользователю число
-   и спроси, продолжать ли. Явная команда даёт согласие на ≤ 8 субагентов;
-   больше 8 — спроси всё равно.
+   ключей, триаж по 15 задач. В плане есть `estimate` (оценка токенов и времени:
+   по каждой пачке и в сумме; это оценка по размеру пачек, не измерение) и
+   `code_root` (каталог, в котором субагенты читают код).
+5. Если `requires_user_confirmation` равно true (`estimated_subagents` больше 8),
+   сначала покажи пользователю `confirmation_text` из плана: там число
+   субагентов, оценка токенов и времени, и вопрос, продолжать ли. Явная команда
+   `/rootgraph-bootstrap` даёт согласие на ≤ 8 субагентов; больше 8 (в том числе
+   после автоматической подсказки SessionStart или блока в результате
+   `rootgraph_init`/`rootgraph_index`) — спроси всегда и жди ответа.
 6. После возврата субагентов вызови `rootgraph_bootstrap_mark(step="architecture_review",
    status="done", note)` и `rootgraph_bootstrap_status`. Не больше 2 раундов.
    Пользователю — одна строка итога.
@@ -77,13 +82,38 @@ running`, жди (опрашивай раз в 30–60 секунд); `failed` �
 - Не выдумывай факты. Не уверен — оставь как есть.
 - Никаких секретов и значений из `.env`: в документы попадают только имена
   переменных. Клиент блокирует находки сканера секретов.
-- Находки разбирай по одной: принять — `rootgraph_task_update(id, status="open",
-  title и description на языке проекта, priority)`; отклонить —
-  `rootgraph_task_comment_add(id, «отклонено: причина»)` и `rootgraph_task_close(id)`.
+- Находки разбирай по одной: принять — `rootgraph_task_update(task_id, status="open",
+  title, description, priority)`, где title и description на языке проекта;
+  отклонить — `rootgraph_task_comment_add(task_id, body)` с текстом «отклонено:
+  причина» и `rootgraph_task_close(task_id)`.
   Массово не закрывай и ничего не пропускай молча.
+- Диаграммы, которые собирает bootstrap (граф вызовов), лежат локально в
+  `.claude/rootgraph/diagrams/` и в дерево проекта не попадают; в `docs/diagrams/`
+  их копирует только явная просьба пользователя (`rootgraph_docs_export` с
+  `publish_diagrams`).
+- Сохраняя Mermaid в части документа, проверь разметку: первая строка — тип
+  диаграммы, скобки и кавычки парные, subgraph закрыт `end`, HTML-тегов нет.
+  `rootgraph_bootstrap_doc_part_save` вернёт `warnings` — исправь и сохрани заново.
+- Числа в шапке части модуля («Точки входа · Go · N файлов · M строк») собирает
+  клиент; не правь их руками: при сохранении они пересчитываются или убираются.
 - Компоненты (`rootgraph_component_add`) — это рантайм-архитектура: сервисы,
   хранилища, хосты, домены, прокси. Каталоги кода — не компоненты, они живут
   в документе `modules`.
+- Находки сканера уже очищены от шума: архивы, чек-листы ревью и соответствия,
+  шаблоны, сгенерированный код и функции без ветвления в них не попадают. Один
+  лимит на весь прогон: в details шагов `tasks_scan` и `techdebt_scan` есть `cap`
+  (лимит), `found` (найдено до лимита), `skipped` (что отсеяно и почему) и, у
+  `tasks_scan`, `skipped_files` (файлы с самым большим отсевом); если `found`
+  больше показанного, выборка идёт по кругу по файлам, а остальное само после
+  разбора не появится: повторный прогон покажет ту же выборку. Чтобы увидеть
+  больше, предложи пользователю поднять `bootstrap.max_findings` (до 400) или
+  исключить лишнее через `bootstrap.scan_exclude`. Задачи в пачках
+  сгруппированы по файлам, настоящий бэклог идёт первым. Если среди оставшихся всё
+  же много пунктов чек-листов, предложи пользователю добавить файлы в
+  `bootstrap.scan_exclude` в `.claude/rootgraph/config.json` (сам конфиг не правь),
+  а настоящий бэклог, попавший под шум, в `bootstrap.backlog_files`. Для `missing_test`
+  сначала ищи тест уровня пакета или косвенный, для `large_function` смотри, нет ли в
+  теле только сборки таблицы или реестра.
 
 ## Стиль текста модулей
 
@@ -93,13 +123,17 @@ running`, жди (опрашивай раз в 30–60 секунд); `failed` �
 
 ## Промпты субагентов (дословно из instruction плана)
 
-[document] «Прочитай текущие части документа {slug}: rootgraph_bootstrap_doc_get(slug, keys). Изучи код проекта (Read/Grep) и перепиши каждую часть из part_keys: убери неточности, добавь смысл (что и зачем), сохрани таблицы и Mermaid, где они верны. Язык текста — {lang_name}. Ключи и названия частей не меняй, всё остаётся на английском в идентификаторах. Не выдумывай: если не уверен, оставь как есть. В конце ОДИН раз вызови rootgraph_bootstrap_doc_part_save(slug, items=[{key, content_md}]) и верни только «сохранено N».»
+Вместо `{code_root}` подставь поле `code_root` плана: это каталог checkout, в котором идёт сессия. Если в плане есть
+`config_root`, конфигурация Rootgraph лежит в другом checkout (git worktree): код читай в `code_root`, а не там.
+`{slug}` — slug документа из batch, `{lang_name}` — `language_name` плана.
 
-[modules] «Для каждого ключа из part_keys документа modules прочитай часть (rootgraph_bootstrap_doc_get), открой файлы каталога компонента, перепиши разделы Responsibility/Public surface/Dependencies/Dependents точнее, на языке {lang_name}, сохрани через rootgraph_bootstrap_doc_part_save; верни «сохранено N».»
+[document] «Код проекта читай в каталоге {code_root}: Read и Grep по абсолютным путям от него. Прочитай текущие части документа {slug}: rootgraph_bootstrap_doc_get(slug, keys). Изучи код проекта (Read/Grep) и перепиши каждую часть из part_keys: убери неточности, добавь смысл (что и зачем), сохрани таблицы и Mermaid, где они верны. Язык текста — {lang_name}. Ключи и названия частей не меняй, всё остаётся на английском в идентификаторах. Не выдумывай: если не уверен, оставь как есть. В конце ОДИН раз вызови rootgraph_bootstrap_doc_part_save(slug, items=[{key, content_md}]) и верни только «сохранено N».»
 
-[triage] «Для каждой задачи из списка открой file_path (Read) вокруг line, реши: реальная проблема — вызови rootgraph_task_update(id, status="open", title и description на языке {lang_name}, priority по важности); ложное срабатывание — rootgraph_task_comment_add(id, «отклонено: причина») и rootgraph_task_close(id). Ничего не пропускай молча; верни «принято A, отклонено B».»
+[modules] «Код проекта читай в каталоге {code_root}: Read и Grep по абсолютным путям от него. Для каждого ключа из part_keys документа modules прочитай часть (rootgraph_bootstrap_doc_get(slug, keys)), открой файлы каталога компонента, перепиши разделы Responsibility/Public surface/Dependencies/Dependents точнее, на языке {lang_name}, сохрани через rootgraph_bootstrap_doc_part_save(slug, items=[{key, content_md}]); верни «сохранено N».»
 
-[components] «Используй candidates и файлы конфигурации (compose, CI, k8s): для каждого реального сервиса/хранилища/хоста/домена/прокси вызови rootgraph_component_add(kind, name, description на языке {lang_name}), затем rootgraph_component_link(component, depends_on) по зависимостям и rootgraph_component_link(component, file_path) для 1–3 главных файлов. Затем rootgraph_bootstrap_mark(step="components", status="done", note).»
+[triage] «Код проекта читай в каталоге {code_root}: Read и Grep по абсолютным путям от него. Для каждой задачи из списка открой file_path (Read; путь относительно {code_root}) вокруг line, реши: реальная проблема — вызови rootgraph_task_update(task_id, status="open", title, description, priority), где title и description на языке {lang_name}, а priority по важности; ложное срабатывание — rootgraph_task_comment_add(task_id, body) с body «отклонено: причина» и rootgraph_task_close(task_id). Ничего не пропускай молча; верни «принято A, отклонено B».»
+
+[components] «Код проекта читай в каталоге {code_root}: Read и Grep по абсолютным путям от него. Используй candidates и файлы конфигурации (compose, CI, k8s): для каждого реального сервиса/хранилища/хоста/домена/прокси вызови rootgraph_component_add(kind, name, description), где description на языке {lang_name}, затем rootgraph_component_link(component, depends_on) по зависимостям и rootgraph_component_link(component, file_path) для 1–3 главных файлов (путь относительно {code_root}). Затем rootgraph_bootstrap_mark(step="components", status="done", note).»
 
 [conventions] «Запусти навык rootgraph-conventions-wizard в режиме «черновик из фактов»: предзаполни ответы по rootgraph_bootstrap_doc_get(slug="development-guide") и конфигам линтеров, показывай пользователю секцию за секцией и сохраняй через rootgraph_conventions_save только подтверждённое.»
 
